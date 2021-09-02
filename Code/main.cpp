@@ -140,19 +140,9 @@ Bits8TransparentBlt(void *DestBuffer, BITMAPINFOHEADER *DestHeader,
     
     SourceDeltaScan = SourceBitmap.Width;
 
-
     // step to starting source pixel
-    if(XSource != 0)
-    {
-        SourcePtr += (SourceBitmap.Width*SourceBitmap.Height - Width) - (YSource*SourceDeltaScan);
-    }
-    else
-    {
-        SourcePtr += (SourceBitmap.Width*SourceBitmap.Height - SourceDeltaScan) - (YSource*SourceDeltaScan);
-    }
-
+    SourcePtr += (SourceBitmap.Width*(SourceBitmap.Height - 1)) + XSource - (YSource*SourceDeltaScan);
     DestPtr += (YDest*DestDeltaScan)+XDest;
-
 
     // account for processed span in delta scans
     SourceDeltaScan += Width;
@@ -238,19 +228,9 @@ Bits32TransparentBlt(void *DestBuffer, BITMAPINFOHEADER *DestHeader,
     
     SourceDeltaScan = SourceBitmap.Width;
 
-
     // step to starting source pixel
-    if(XSource != 0)
-    {
-        SourcePtr += (SourceBitmap.Width*SourceBitmap.Height - Width) - (YSource*SourceDeltaScan);
-    }
-    else
-    {
-        SourcePtr += (SourceBitmap.Width*SourceBitmap.Height - SourceDeltaScan) - (YSource*SourceDeltaScan);
-    }
-
+    SourcePtr += (SourceBitmap.Width*(SourceBitmap.Height - 1)) + XSource - (YSource*SourceDeltaScan);
     DestPtr += (YDest*DestDeltaScan)+XDest;
-
 
     // account for processed span in delta scans
     SourceDeltaScan += Width;
@@ -323,7 +303,7 @@ int WINAPI WinMain(HINSTANCE Instance,
         BITMAPINFO BackBufferInfo = {};
         BackBufferInfo.bmiHeader.biSize = sizeof(BackBufferInfo.bmiHeader);
         BackBufferInfo.bmiHeader.biWidth = Width;
-        BackBufferInfo.bmiHeader.biHeight = -Height;
+        BackBufferInfo.bmiHeader.biHeight = Height;
         BackBufferInfo.bmiHeader.biPlanes = 1;
         BackBufferInfo.bmiHeader.biBitCount = 32;
         BackBufferInfo.bmiHeader.biCompression = BI_RGB;
@@ -349,17 +329,15 @@ int WINAPI WinMain(HINSTANCE Instance,
                 Buffer[Y*Width+X] = 0xFFFFCCCC; 
             }
         }
-
-        
+ 
         Bits32TransparentBlt(BackBuffer, &BackBufferInfo.bmiHeader,
-                       0, 0, Sabrina32BMP);
+                        0, 0, Sabrina32BMP);
         Bits8TransparentBlt(BackBuffer, &BackBufferInfo.bmiHeader,
                        256, 0, Sabrina8BMP);
         Bits32TransparentBlt(BackBuffer, &BackBufferInfo.bmiHeader,
                              0, 256, Camila32BMP);
         Bits8TransparentBlt(BackBuffer, &BackBufferInfo.bmiHeader,
                        128, 256, Camila8BMP);
-
 
         GlobalRunning = true;
         ShowWindow(Window, nShowCmd);
